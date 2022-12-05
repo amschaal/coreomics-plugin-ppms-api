@@ -7,6 +7,8 @@ from rest_framework.permissions import AllowAny
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.response import Response
 from dnaorder.models import Submission
+from plugins import plugin_submission_decorator
+import csv
 # #Python 3 POST
 from urllib import request, parse
 def post_data(submission, params):
@@ -18,9 +20,12 @@ def post_data(submission, params):
 # post_data({"action":"getservices"})
 
 # @csrf_exempt
+
 @api_view(['GET'])
 @permission_classes((AllowAny,))
-def get_services(request, submission_id):
-    submission = Submission.objects.get(id=submission_id)
+@plugin_submission_decorator
+def get_services(request, submission):
     response = post_data(submission, {"action":"getservices"})
-    return Response({'response': response.read()})
+    lines = [l.decode('utf-8') for l in response.readlines()]
+    services = csv.reader(lines)
+    return Response({'submission':submission.id, 'services': services})

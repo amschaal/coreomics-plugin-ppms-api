@@ -23,7 +23,7 @@ def post_data(submission, params):
 
 @api_view(['GET'])
 @permission_classes((AllowAny,))
-@plugin_submission_decorator
+@plugin_submission_decorator(permissions=['VIEW'], all=True)
 def get_services(request, submission):
     response = post_data(submission, {"action":"getservices"})
     lines = [l.decode('utf-8') for l in response.readlines()]

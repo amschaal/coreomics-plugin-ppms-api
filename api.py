@@ -49,11 +49,12 @@ def create_order(request, submission):
         # "comments": "Created for submission "+submission.get_absolute_url(True)
         }
     try:
-        response = post_data(submission, data)
+        order = post_data(submission, data).read().decode('utf-8')
+        if not order.strip().isnumeric():
+            raise exceptions.APIException(order)
     except Exception as e:
-        raise exceptions.NotAcceptable(str(e))
-    order = response.read().decode('utf-8')
-    plugin_data['orders'].append(order)
+        raise exceptions.APIException(str(e))
+    plugin_data['orders'].append(order.strip())
     submission.plugin_data['ppms'] = plugin_data
     submission.save()
     # lines = [l.decode('utf-8') for l in response.readlines()]

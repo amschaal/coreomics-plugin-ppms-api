@@ -40,8 +40,16 @@ def create_order(request, submission):
         # raise exceptions.NotAcceptable('Submission already has an order')
     else:
         plugin_data['orders'] = []
+    data = {
+        "action":"createorder",
+        "login": request.data["username"], 
+        "serviceid": request.data["serviceid"], 
+        "quantity": request.data["quantity"], 
+        "Scomments": "Created for submission "+submission.get_absolute_url(True)
+        # "comments": "Created for submission "+submission.get_absolute_url(True)
+        }
     try:
-        response = post_data(submission, {"action":"createorder","login": request.POST.get("username"), "serviceid": request.POST.get("serviceid"), "quantity": request.POST.get("quantity"), "Scomments": "Created for submission "+submission.get_absolute_url(True)})
+        response = post_data(submission, data)
     except Exception as e:
         raise exceptions.NotAcceptable(str(e))
     order = response.read().decode('utf-8')
@@ -50,4 +58,12 @@ def create_order(request, submission):
     submission.save()
     # lines = [l.decode('utf-8') for l in response.readlines()]
     # order = csv.DictReader(lines)
-    return Response({'submission':submission.id, 'plugin_data': plugin_data})
+    return Response(plugin_data)
+
+@api_view(['GET'])
+@plugin_submission_decorator(permissions=['VIEW'], all=True)
+def get_orders(request, submission):
+    # response = post_data(submission, {"action":"getservices"})
+    # lines = [l.decode('utf-8') for l in response.readlines()]
+    # services = csv.DictReader(lines)
+    return Response(submission.plugin_data['ppms'])

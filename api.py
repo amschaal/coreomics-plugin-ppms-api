@@ -59,7 +59,7 @@ def create_order(request, submission):
     submission.save()
     # lines = [l.decode('utf-8') for l in response.readlines()]
     # order = csv.DictReader(lines)
-    return Response(plugin_data)
+    return Response({'order':order,'plugin_data':plugin_data})
 
 @api_view(['GET'])
 @plugin_submission_decorator(permissions=['VIEW'], all=True)
@@ -67,4 +67,7 @@ def get_orders(request, submission):
     # response = post_data(submission, {"action":"getservices"})
     # lines = [l.decode('utf-8') for l in response.readlines()]
     # services = csv.DictReader(lines)
-    return Response(submission.plugin_data['ppms'])
+    plugin_data = submission.plugin_data.get('ppms',{})
+    if 'orders' not in plugin_data:
+        plugin_data['orders'] = []
+    return Response(plugin_data)

@@ -12,12 +12,20 @@ from plugins import plugin_submission_decorator
 import csv
 # #Python 3 POST
 from urllib import request, parse
-def post_data(submission, params):
-    params['apikey'] = submission.lab.plugins['ppms']['private']['pumapi_token']
+def post_data(lab, params):
+    params['apikey'] = lab.plugins['ppms']['private']['pumapi_token']
     data = parse.urlencode(params).encode()
-    req =  request.Request(submission.lab.plugins['ppms']['private']['pumapi_url'], data=data) # this will make the method "POST"
+    req =  request.Request(lab.plugins['ppms']['private']['pumapi_url'], data=data) # this will make the method "POST"
     resp = request.urlopen(req)
     return resp
+
+def group_exists(lab, unitlogin):
+    response = post_data(lab, {"action":"getgroup","unitlogin":unitlogin})
+    lines = [l.decode('utf-8') for l in response.readlines()]
+    data = response.read()
+    if len(data.split('\n')) > 1:
+        return True
+    return False
 # post_data({"action":"getservices"})
 
 # @csrf_exempt
@@ -25,7 +33,7 @@ def post_data(submission, params):
 @api_view(['GET'])
 @plugin_submission_decorator(permissions=['VIEW'], all=True)
 def get_services(request, submission):
-    response = post_data(submission, {"action":"getservices"})
+    response = post_data(submission.lab, {"action":"getservices"})
     lines = [l.decode('utf-8') for l in response.readlines()]
     services = csv.DictReader(lines)
     return Response({'submission':submission.id, 'services': services})
@@ -49,7 +57,7 @@ def create_order(request, submission):
         # "comments": "Created for submission "+submission.get_absolute_url(True)
         }
     try:
-        order = post_data(submission, data).read().decode('utf-8')
+        order = post_data(submission.lab, data).read().decode('utf-8')
         if not order.strip().isnumeric():
             raise exceptions.APIException(order)
     except Exception as e:

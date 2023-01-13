@@ -1,11 +1,6 @@
 from rest_framework import serializers
-
-
-
-
-from dnaorder.payment import PaymentType
-from dnaorder.payment.ppms.api import group_exists
-
+from plugins import PaymentType
+from .api import group_exists
 
 class PPMSPaymentSerializer(serializers.Serializer):
     pi_email= serializers.CharField(required=False)
@@ -16,7 +11,7 @@ class PPMSPaymentSerializer(serializers.Serializer):
         pi_email = data.get('pi_email', None)
         if not pi_email:
             raise serializers.ValidationError({"pi_email":"PPMS PI Email is required."})
-        if not group_exists(pi_email):
+        if not group_exists(self.parent._lab, pi_email):
             raise serializers.ValidationError({"pi_email":"Group account with PI login '{0}' does not exist in PPMS.".format(pi_email)})
         return data
 

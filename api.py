@@ -22,11 +22,12 @@ def post_data(lab, params):
 def group_exists(lab, unitlogin):
     response = post_data(lab, {"action":"getgroup","unitlogin":unitlogin})
     lines = [l.decode('utf-8') for l in response.readlines()]
-    data = response.read()
-    if len(data.split('\n')) > 1:
+    # data = response.read().decode('utf-8')
+    # if len(data.split('\n')) > 1:
+    #     return True
+    if len(lines) > 1:
         return True
     return False
-# post_data({"action":"getservices"})
 
 # @csrf_exempt
 

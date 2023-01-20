@@ -23,7 +23,7 @@ def group_exists(lab, unitlogin):
         return True
     return False
 
-def get_orders(lab, unitlogin):
-    response = post_data(lab, {"action":"getorders","unitlogin":unitlogin})
+def get_orders(lab):
+    response = post_data(lab, {"action":"getorders"})
     lines = [l.decode('utf-8') for l in response.readlines()]
     return list(csv.DictReader(lines[1:]))

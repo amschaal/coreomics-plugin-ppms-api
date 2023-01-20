@@ -55,3 +55,8 @@ def get_orders(request, submission):
     if 'orders' not in plugin_data:
         plugin_data['orders'] = []
     return Response(plugin_data)
+
+@api_view(['GET'])
+@plugin_submission_decorator(permissions=['ADMIN', 'STAFF'], all=False)
+def get_all_orders(request, submission):
+    return Response(api.get_orders(submission.lab))

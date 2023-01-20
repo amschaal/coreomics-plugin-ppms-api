@@ -1,8 +1,8 @@
 from django.urls import include, path
-from . import api
+from . import views
 
 urlpatterns = [
-    path('services/', api.get_services, name='ppms_services'),
-    path('orders/', api.get_orders, name='ppms_submission_orders'),
-    path('create_order/', api.create_order, name='create_order')
+    path('services/', views.get_services, name='ppms_services'),
+    path('orders/', views.get_orders, name='ppms_submission_orders'),
+    path('create_order/', views.create_order, name='create_order')
 ]

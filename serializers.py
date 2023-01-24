@@ -1,8 +1,8 @@
 from rest_framework import serializers
-from plugins import PaymentType
+from plugins import PaymentType, BasePaymentSerializer
 from .api import group_exists
-
-class PPMSPaymentSerializer(serializers.Serializer):
+import sys
+class PPMSPaymentSerializer(BasePaymentSerializer):
     pi_email= serializers.CharField(required=False)
     display = serializers.SerializerMethodField(read_only=True)
     def get_display(self, obj):

@@ -8,22 +8,20 @@ import csv
 # Create your views here.
 @api_view(['GET'])
 @plugin_submission_decorator(permissions=['VIEW'], all=True)
-def get_services(request, submission):
-    response = api.post_data(submission.lab, {"action":"getservices"})
+def get_services(request, submission, plugin):
+    response = api.post_data(plugin.settings, {"action":"getservices"})
     lines = [l.decode('utf-8') for l in response.readlines()]
     services = csv.DictReader(lines)
     return Response({'submission':submission.id, 'services': services})
 
 @api_view(['POST'])
 @plugin_submission_decorator(permissions=['STAFF'], all=True)
-def create_order(request, submission):
-    plugin_data = submission.plugin_data.get('ppms',{})
-
-    if 'orders' in plugin_data:
+def create_order(request, submission, plugin):
+    if 'orders' in plugin.data:
         pass
         # raise exceptions.NotAcceptable('Submission already has an order')
     else:
-        plugin_data['orders'] = []
+        plugin.data['orders'] = []
     data = {
         "action":"createorder",
         "login": request.data["username"], 
@@ -33,30 +31,23 @@ def create_order(request, submission):
         # "comments": "Created for submission "+submission.get_absolute_url(True)
         }
     try:
-        order = api.post_data(submission.lab, data).read().decode('utf-8')
+        order = api.post_data(plugin.settings, data).read().decode('utf-8')
         if not order.strip().isnumeric():
             raise exceptions.APIException(order)
     except Exception as e:
         raise exceptions.APIException(str(e))
-    plugin_data['orders'].append(order.strip())
-    submission.plugin_data['ppms'] = plugin_data
-    submission.save()
-    # lines = [l.decode('utf-8') for l in response.readlines()]
-    # order = csv.DictReader(lines)
-    return Response({'order':order,'plugin_data':plugin_data})
+    plugin.data['orders'].append(order.strip())
+    plugin.save()
+    return Response({'order':order,'plugin_data':plugin.data})
 
 @api_view(['GET'])
 @plugin_submission_decorator(permissions=['VIEW'], all=True)
-def get_orders(request, submission):
-    # response = post_data(submission, {"action":"getservices"})
-    # lines = [l.decode('utf-8') for l in response.readlines()]
-    # services = csv.DictReader(lines)
-    plugin_data = submission.plugin_data.get('ppms',{})
-    if 'orders' not in plugin_data:
-        plugin_data['orders'] = []
-    return Response(plugin_data)
+def get_orders(request, submission, plugin):
+    if 'orders' not in plugin.data:
+        plugin.data['orders'] = []
+    return Response(plugin.data)
 
 @api_view(['GET'])
 @plugin_submission_decorator(permissions=['ADMIN', 'STAFF'], all=False)
-def get_all_orders(request, submission):
-    return Response(api.get_orders(submission.lab))
+def get_all_orders(request, submission, plugin):
+    return Response(api.get_orders(plugin.settings))

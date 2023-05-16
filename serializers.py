@@ -11,7 +11,7 @@ class PPMSPaymentSerializer(BasePaymentSerializer):
         pi_email = data.get('pi_email', None)
         if not pi_email:
             raise serializers.ValidationError({"pi_email":"PPMS PI Email is required."})
-        if not group_exists(self.parent._lab, pi_email):
+        if not group_exists(self._settings, pi_email):
             raise serializers.ValidationError({"pi_email":"Group account with PI login '{0}' does not exist in PPMS.".format(pi_email)})
         return data
 

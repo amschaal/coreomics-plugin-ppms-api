@@ -13,6 +13,13 @@ def post_data(settings, params):
     resp = request.urlopen(req)
     return resp
 
+def get_group(settings, unitlogin):
+    response = post_data(settings, {"action":"getgroup","unitlogin":unitlogin})
+    lines = [l.decode('utf-8') for l in response.readlines()]
+    if len(lines) > 1:
+        return list(csv.DictReader(lines))
+    return None
+
 def group_exists(settings, unitlogin):
     response = post_data(settings, {"action":"getgroup","unitlogin":unitlogin})
     lines = [l.decode('utf-8') for l in response.readlines()]

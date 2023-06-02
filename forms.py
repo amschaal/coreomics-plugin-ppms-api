@@ -1,12 +1,16 @@
+from plugins import RESTRICT_TO_LAB, RESTRICT_TO_INSTITUTION
+
 form = {
     'private': {
         "order": [
-          "pumapi_url",
-          "pumapi_token"
+          "ppms_url",
+          "pumapi_token",
+          "api2_token"
         ],
         "required": [
-          "pumapi_url",
-          "pumapi_token"
+          "ppms_url",
+          "pumapi_token",
+          "api2_token"
         ],
         "layout": {},
         "properties": {
@@ -16,11 +20,18 @@ form = {
             "description": "Calls to the PPMS PUMAPI will be made using the token.  It should have the necessary permissions to perform API calls on behalf of the core",
             "pattern": "^.+$"
           },
-          "pumapi_url": {
+          "api2_token": {
             "type": "string",
-            "title": "PPMS PUMAPI URL",
-            "description": "I.E. https://ppms.us/yourorg/pumapi/",
-            "pattern": "^https://.+$"
+            "title": "PPMS API2 Token",
+            "description": "Calls to the PPMS API2 will be made using the token.  It should have the necessary permissions to perform API calls on behalf of the core",
+            "pattern": "^.+$"
+          },
+          "ppms_url": {
+            "type": "string",
+            "title": "PPMS Base URL",
+            "description": "I.E. https://ppms.us/yourorg/",
+            "pattern": "^https://.+$",
+            # "restrict_to": [RESTRICT_TO_INSTITUTION]
           }
         }
         },

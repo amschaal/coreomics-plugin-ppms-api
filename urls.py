@@ -5,5 +5,6 @@ urlpatterns = [
     path('services/', views.get_services, name='ppms_services'),
     path('orders/', views.get_orders, name='ppms_submission_orders'),
     path('all_orders/', views.get_all_orders, name='ppms_all_orders'),
-    path('create_order/', views.create_order, name='create_order')
+    path('create_order/', views.create_order, name='ppms_create_order'),
+    path('user_info/', views.get_user_info, name='ppms_user_info')
 ]

@@ -3,13 +3,14 @@ The API for PPMS is terrible and does not provide standard return codes formats.
 Don't bother trying to make this pretty...
 """
 
-import csv
+import csv, json
 # #Python 3 POST
 from urllib import request, parse
-def post_data(settings, params):
-    params['apikey'] = settings['pumapi_token']
+def post_data(settings, params, api2=False):
+    url = '{}/{}/'.format(settings['ppms_url'], 'API2' if api2 else 'pumapi')
+    params['apikey'] = settings['api2_token'] if api2 else settings['pumapi_token']
     data = parse.urlencode(params).encode()
-    req =  request.Request(settings['pumapi_url'], data=data) # this will make the method "POST"
+    req =  request.Request(url, data=data) # this will make the method "POST"
     resp = request.urlopen(req)
     return resp
 
@@ -26,6 +27,10 @@ def group_exists(settings, unitlogin):
     if len(lines) > 1:
         return True
     return False
+
+def get_user_info(settings, email):
+    response = post_data(settings, {"action":"Report2168","email":email,"outformat":"json"},api2=True)
+    return json.loads(response.read())
 
 def get_orders(settings):
     response = post_data(settings, {"action":"getorders"})

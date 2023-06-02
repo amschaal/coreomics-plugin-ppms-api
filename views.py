@@ -51,3 +51,12 @@ def get_orders(request, submission, plugin):
 @plugin_submission_decorator(permissions=['ADMIN', 'STAFF'], all=False)
 def get_all_orders(request, submission, plugin):
     return Response(api.get_orders(plugin.settings))
+
+@api_view(['GET'])
+@plugin_submission_decorator(permissions=['ADMIN', 'STAFF'], all=False)
+def get_user_info(request, submission, plugin):
+    accounts = {
+        submission.email: api.get_user_info(plugin.settings, submission.email),
+        submission.pi_email: api.get_user_info(plugin.settings, submission.pi_email)
+    }
+    return Response(accounts)

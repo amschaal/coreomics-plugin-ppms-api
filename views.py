@@ -61,3 +61,14 @@ def get_user_info(request, submission, plugin):
         accounts += api.get_user_info(plugin.settings, email)
     # accounts = { email: api.get_user_info(plugin.settings, email) for email in emails }
     return Response(accounts)
+
+@api_view(['GET'])
+@plugin_submission_decorator(permissions=['ADMIN', 'STAFF'], all=False)
+def search_orders(request, submission, plugin):
+    comment = request.GET.get('comment','')
+    order_ids = request.GET.get('order_ids',[])
+    date_gte = request.GET.get('date_gte','')
+    if not comment and not order_ids and not date_gte:
+        raise exceptions.NotAcceptable('Please provide a query for at least one of the following: comment, order_ids, date_gte')
+    orders = api.search_orders(plugin.settings, comment=comment, unit_id=request.GET.get('unit_id',0), order_ids=order_ids, date_gte=date_gte)
+    return Response(orders)

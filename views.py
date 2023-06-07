@@ -65,10 +65,23 @@ def get_user_info(request, submission, plugin):
 @api_view(['GET'])
 @plugin_submission_decorator(permissions=['ADMIN', 'STAFF'], all=False)
 def search_orders(request, submission, plugin):
-    comment = request.GET.get('comment','')
-    order_ids = request.GET.get('order_ids',[])
-    date_gte = request.GET.get('date_gte','')
+    comment = request.query_params.get('comment','')
+    order_ids = request.query_params.getlist('order_ids[]',[])
+    date_gte = request.query_params.get('date_gte','')
     if not comment and not order_ids and not date_gte:
         raise exceptions.NotAcceptable('Please provide a query for at least one of the following: comment, order_ids, date_gte')
     orders = api.search_orders(plugin.settings, comment=comment, unit_id=request.GET.get('unit_id',0), order_ids=order_ids, date_gte=date_gte)
+    return Response(orders)
+
+@api_view(['POST'])
+@plugin_submission_decorator(permissions=['ADMIN', 'STAFF'], all=False)
+def import_order(request, submission, plugin):
+    order_id = request.data.get('order_id')
+    orders = api.search_orders(plugin.settings, order_ids=[order_id])
+    if not orders:
+        raise exceptions.NotAcceptable('Unable to find order {}'.format(order_id))
+    if 'orders' not in plugin.data:
+        plugin.data['orders'] = []
+    plugin.data['orders'].append(order_id)
+    plugin.save()
     return Response(orders)

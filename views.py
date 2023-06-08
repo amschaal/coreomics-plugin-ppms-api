@@ -44,8 +44,10 @@ def create_order(request, submission, plugin):
 @plugin_submission_decorator(permissions=['VIEW'], all=True)
 def get_orders(request, submission, plugin):
     if 'orders' not in plugin.data:
-        plugin.data['orders'] = []
-    return Response(plugin.data)
+        return Response([])
+        # plugin.data['orders'] = []
+    orders = api.search_orders(plugin.settings, order_ids=plugin.data['orders'])
+    return Response(orders)
 
 @api_view(['GET'])
 @plugin_submission_decorator(permissions=['ADMIN', 'STAFF'], all=False)
@@ -57,8 +59,11 @@ def get_all_orders(request, submission, plugin):
 def get_user_info(request, submission, plugin):
     emails = set([submission.email, submission.pi_email])
     accounts = []
-    for email in emails:
-        accounts += api.get_user_info(plugin.settings, email)
+    try:
+        for email in emails:
+            accounts += api.get_user_info(plugin.settings, email)
+    except:
+        raise exceptions.APIException('An error occurred retrieving user details.')
     # accounts = { email: api.get_user_info(plugin.settings, email) for email in emails }
     return Response(accounts)
 

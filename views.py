@@ -43,7 +43,7 @@ def create_order(request, submission, plugin):
 @api_view(['GET'])
 @plugin_submission_decorator(permissions=['VIEW'], all=True)
 def get_orders(request, submission, plugin):
-    if 'orders' not in plugin.data:
+    if 'orders' not in plugin.data or not plugin.data['orders']:
         return Response([])
         # plugin.data['orders'] = []
     orders = api.search_orders(plugin.settings, order_ids=plugin.data['orders'])
@@ -90,3 +90,16 @@ def import_order(request, submission, plugin):
     plugin.data['orders'].append(order_id)
     plugin.save()
     return Response(orders)
+
+@api_view(['POST'])
+@plugin_submission_decorator(permissions=['ADMIN', 'STAFF'], all=False)
+def remove_order(request, submission, plugin):
+    order_id = request.data.get('order_id')
+    if 'orders' not in plugin.data:
+        plugin.data['orders'] = []
+    try:
+        plugin.data['orders'].remove(order_id)
+    except:
+        raise exceptions.NotFound('Order ID {} is not associated with this submission'.format(order_id))
+    plugin.save()
+    return Response({'message': 'Order {} removed'.format(order_id)})

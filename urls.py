@@ -8,5 +8,6 @@ urlpatterns = [
     path('create_order/', views.create_order, name='ppms_create_order'),
     path('user_info/', views.get_user_info, name='ppms_user_info'),
     path('search_orders/', views.search_orders, name='ppms_search_orders'),
-    path('import_order/', views.import_order, name='ppms_import_order')
+    path('import_order/', views.import_order, name='ppms_import_order'),
+    path('remove_order/', views.remove_order, name='ppms_remove_order')
 ]

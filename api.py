@@ -30,7 +30,10 @@ def group_exists(settings, unitlogin):
 
 def get_user_info(settings, email):
     response = post_data(settings, {"action":"Report2168","email":email,"outformat":"json"},api2=True)
-    return json.loads(response.read())
+    body = response.read()
+    if not body:
+        return []
+    return json.loads(body)
 
 def search_orders(settings, comment='', unit_id=0, order_ids=[], date_gte=''):
     response = post_data(settings, {"action":"Report2167","comment_contains":comment, "unitID":unit_id, "order_refs": ','.join(order_ids), "date_gte":date_gte,"outformat":"json"},api2=True)

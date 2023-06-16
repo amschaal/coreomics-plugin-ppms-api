@@ -37,7 +37,10 @@ def get_user_info(settings, email):
 
 def search_orders(settings, comment='', unit_id=0, order_ids=[], date_gte=''):
     response = post_data(settings, {"action":"Report2167","comment_contains":comment, "unitID":unit_id, "order_refs": ','.join(order_ids), "date_gte":date_gte,"outformat":"json"},api2=True)
-    return json.loads(response.read())
+    body = response.read()
+    if not body:
+        return []
+    return json.loads(body)
 
 def get_orders(settings):
     response = post_data(settings, {"action":"getorders"})

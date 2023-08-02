@@ -1,6 +1,6 @@
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-from rest_framework import exceptions
+from rest_framework import exceptions, permissions
 from plugins import plugin_submission_decorator
 from . import api
 import csv
@@ -41,7 +41,8 @@ def create_order(request, submission, plugin):
     return Response({'order':order,'plugin_data':plugin.data})
 
 @api_view(['GET'])
-@plugin_submission_decorator(permissions=['VIEW'], all=True)
+@permission_classes([permissions.AllowAny])
+@plugin_submission_decorator(permissions=[], all=True)
 def get_orders(request, submission, plugin):
     if 'orders' not in plugin.data or not plugin.data['orders']:
         return Response([])

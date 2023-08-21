@@ -17,4 +17,15 @@ class PPMSHasOrderFilter(filters.BaseFilterBackend):
         else:
             return queryset
 
-PPMS_FILTER_CLASSES = [PPMSHasOrderFilter]
+class PPMSOrderFilter(filters.BaseFilterBackend):
+    """
+    Filter to whether a submission does or not have an associated PPMS order
+    """
+    def filter_queryset(self, request, queryset, view):
+        order = view.request.query_params.get('ppms_order_contains',None)
+        if order is not None:
+            return queryset.filter(plugin_data__ppms__orders__icontains=str(order))
+        else:
+            return queryset
+
+PPMS_FILTER_CLASSES = [PPMSHasOrderFilter, PPMSOrderFilter]

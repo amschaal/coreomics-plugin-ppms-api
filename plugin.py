@@ -10,6 +10,7 @@ class PPMSPlugin(Plugin):
     PAYMENT = PPMSPaymentType
     FILTERS = {
         'ppms_has_order': { "type": "boolean", "title": "Has PPMS Order", "enum": ['True', 'False'], "filters": [{"label": "=", "filter": "ppms_has_order"}]},
-        'ppms_order': { "type": "string", "title": "PPMS Order Ref", "filters": [{"label": "Order Ref Contains", "filter": "ppms_order_contains"}]},
+        'ppms_order': { "type": "string", "title": "PPMS Order Ref", "description": "Search by the PPMS order reference number (without preceding zeros)", "filters": [{"label": "Order Ref Contains", "filter": "ppms_order_contains"}]},
+        'ppms_unpaid': { "type": "boolean", "title": "Has Unpaid PPMS Order", "enum": ['True'], "filters": [{"label": "=", "filter": "ppms_unpaid"}]},
     }
     FILTER_CLASSES = filters.PPMS_FILTER_CLASSES

@@ -48,6 +48,8 @@ def get_orders(request, submission, plugin):
         return Response([])
         # plugin.data['orders'] = []
     orders = api.search_orders(plugin.settings, order_ids=plugin.data['orders'])
+    plugin.data['order_details'] = orders
+    plugin.save()
     return Response(orders)
 
 @api_view(['GET'])

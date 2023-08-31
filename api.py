@@ -6,6 +6,11 @@ Don't bother trying to make this pretty...
 import csv, json
 # #Python 3 POST
 from urllib import request, parse
+
+def get_lab_settings(lab):
+    from .plugin import PPMSPlugin
+    return lab.get_plugin_settings(private=True).get(PPMSPlugin.ID, {})
+
 def post_data(settings, params, api2=False):
     url = '{}/{}/'.format(settings['ppms_url'], 'API2' if api2 else 'pumapi')
     params['apikey'] = settings['api2_token'] if api2 else settings['pumapi_token']

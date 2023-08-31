@@ -96,6 +96,9 @@ def import_order(request, submission, plugin):
     if not orders:
         raise exceptions.NotAcceptable('Unable to find order {}'.format(order_id))
     plugin.data['orders'].append(order_id)
+    if 'order_details' not in plugin.data:
+        plugin.data['order_details'] = []
+    plugin.data['order_details'] += orders
     plugin.save()
     return Response(orders)
 
@@ -109,6 +112,7 @@ def remove_order(request, submission, plugin):
         plugin.data['orders'].remove(order_id)
     except:
         raise exceptions.NotFound('Order ID {} is not associated with this submission'.format(order_id))
-    plugin.data['order_details'] = [o for o in plugin.data['order_details'] if o['orderref'] == order_id]
+    if 'order_details' in plugin.data:
+        plugin.data['order_details'] = [o for o in plugin.data['order_details'] if o['orderref'] != order_id]
     plugin.save()
     return Response({'message': 'Order {} removed'.format(order_id)})

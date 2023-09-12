@@ -5,7 +5,9 @@ form = {
         "order": [
           "ppms_url",
           "pumapi_token",
-          "api2_token"
+          "api2_token",
+          "user_info_report_id",
+          "order_search_report_id"
         ],
         "required": [
           "ppms_url",
@@ -31,6 +33,18 @@ form = {
             "title": "PPMS Base URL",
             "description": "I.E. https://ppms.us/yourorg/",
             "pattern": "^https://.+$",
+            # "restrict_to": [RESTRICT_TO_INSTITUTION]
+          },
+          "user_info_report_id": {
+            "type": "string",
+            "title": "Report ID of custom user info API2 call",
+            "description": "I.E. Report1234"
+            # "restrict_to": [RESTRICT_TO_INSTITUTION]
+          },
+          "order_search_report_id": {
+            "type": "string",
+            "title": "Report ID of custom order search API2 call",
+            "description": "I.E. Report1234"
             # "restrict_to": [RESTRICT_TO_INSTITUTION]
           }
         }

@@ -6,13 +6,15 @@ form = {
           "ppms_url",
           "pumapi_token",
           "api2_token",
+          "core_id",
           "user_info_report_id",
           "order_search_report_id"
         ],
         "required": [
           "ppms_url",
           "pumapi_token",
-          "api2_token"
+          "api2_token",
+          "core_id"
         ],
         "layout": {},
         "properties": {
@@ -46,6 +48,11 @@ form = {
             "title": "Report ID of custom order search API2 call",
             "description": "I.E. Report1234"
             # "restrict_to": [RESTRICT_TO_INSTITUTION]
+          },
+          "core_id": {
+            "type": "number",
+            "title": "Core ID",
+            "description": "ID number of Core in PPMS"
           }
         }
         },

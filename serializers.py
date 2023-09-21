@@ -18,7 +18,8 @@ class PPMSPaymentSerializer(BasePaymentSerializer):
     #         raise serializers.ValidationError({"pi_email":"Group account with PI login '{0}' does not exist in PPMS.".format(pi_email)})
     #     return data
     def to_internal_value(self, data):
-        ppms_email = data.get('ppms_email', None)
+        data = super().to_internal_value(data)
+        ppms_email = data.get('ppms_email', data)
         if not ppms_email:
             raise serializers.ValidationError({"ppms_email":"PPMS Email is required."})
         if ppms_email not in [self._submission_data.get('email'), self._submission_data.get('pi_email')]:

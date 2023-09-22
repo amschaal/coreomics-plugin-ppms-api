@@ -52,7 +52,8 @@ form = {
           "core_id": {
             "type": "number",
             "title": "Core ID",
-            "description": "ID number of Core in PPMS"
+            "description": "ID number of Core in PPMS",
+            "restrict_to": [RESTRICT_TO_LAB]
           }
         }
         },

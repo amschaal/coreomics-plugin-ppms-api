@@ -9,7 +9,7 @@ from urllib import request, parse
 
 def get_lab_settings(lab):
     from .plugin import PPMSPlugin
-    return lab.get_plugin_settings(private=True).get(PPMSPlugin.ID, {})
+    return lab.get_plugin_settings_by_id(PPMSPlugin.ID, private=True, institution=True)
 
 def post_data(settings, params, api2=False):
     url = '{}/{}/'.format(settings['ppms_url'], 'API2' if api2 else 'pumapi')

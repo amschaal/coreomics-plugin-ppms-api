@@ -46,7 +46,15 @@ def search_orders(settings, comment='', unit_id=0, order_ids=[], date_gte=''):
     body = response.read()
     if not body:
         return []
-    return json.loads(body)
+    orders = json.loads(body)
+    orders_dict = {}
+    for o in orders:
+        if o['orderref'] in orders_dict:
+            if o['staff_comment']:
+                orders_dict[o['orderref']]['staff_comment'] += ', ' + o['staff_comment']
+        else:
+            orders_dict[o['orderref']] = o
+    return list(orders_dict.values())
 
 def get_orders(settings):
     response = post_data(settings, {"action":"getorders"})

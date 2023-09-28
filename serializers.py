@@ -24,13 +24,19 @@ class PPMSPaymentSerializer(BasePaymentSerializer):
             raise serializers.ValidationError({"ppms_email":"PPMS Email is required."})
         if ppms_email not in [self._submission_data.get('email'), self._submission_data.get('pi_email')]:
             raise serializers.ValidationError({"ppms_email":"PPMS Email must match either submitter or PI email."})
-        user_info = get_user_info(self._settings, ppms_email)
+        try:
+            user_info = get_user_info(self._settings, ppms_email)
+        except Exception as e:
+            raise serializers.ValidationError({"ppms_email":"An error has occured trying to confirm the PPMS email address.  Error: {}".format(str(e))})
         # raise Exception(user_info)
         if not user_info:
             raise serializers.ValidationError({"ppms_email":"PPMS account with email '{0}' does not exist in PPMS.".format(ppms_email)})
         data['user_info'] = user_info.pop()
         data['ppms_email'] = ppms_email
-        data['group'] = get_group(self._settings, data['user_info'].get('GroupPIUnitLogin')).pop()
+        try:
+            data['group'] = get_group(self._settings, data['user_info'].get('GroupPIUnitLogin')).pop()
+        except Exception as e:
+            raise serializers.ValidationError({"ppms_email":"An error has occured trying to retrieve the PPMS group.  Error: {}".format(str(e))})
         return data# super().to_internal_value(data)
 
 class PPMSPaymentType(PaymentType):

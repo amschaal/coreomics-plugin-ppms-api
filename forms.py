@@ -3,7 +3,6 @@ from plugins import RESTRICT_TO_LAB, RESTRICT_TO_INSTITUTION
 form = {
     'private': {
         "order": [
-          "ppms_url",
           "pumapi_token",
           "api2_token",
           "core_id",
@@ -11,7 +10,6 @@ form = {
           "order_search_report_id"
         ],
         "required": [
-          "ppms_url",
           "pumapi_token",
           "api2_token",
           "core_id"
@@ -29,13 +27,6 @@ form = {
             "title": "PPMS API2 Token",
             "description": "Calls to the PPMS API2 will be made using the token.  It should have the necessary permissions to perform API calls on behalf of the core",
             "pattern": "^.+$"
-          },
-          "ppms_url": {
-            "type": "string",
-            "title": "PPMS Base URL",
-            "description": "I.E. https://ppms.us/yourorg/",
-            "pattern": "^https://.+$",
-            # "restrict_to": [RESTRICT_TO_INSTITUTION]
           },
           "user_info_report_id": {
             "type": "string",
@@ -59,17 +50,18 @@ form = {
         },
     'public': {
         "order": [
-          "message",
+          "ppms_url",
         ],
         "required": [
+          "ppms_url"
         ],
         "layout": {},
         "properties": {
-          "message": {
+          "ppms_url": {
             "type": "string",
-            "title": "Message",
-            "validators": [],
-            "description": "You may enter an optional message to your staff and clients regarding usage of PPMS."
+            "title": "PPMS Base URL",
+            "description": "I.E. https://ppms.us/yourorg/",
+            "pattern": "^https://.+$",
           }
         }
       }

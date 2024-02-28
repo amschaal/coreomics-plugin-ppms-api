@@ -4,11 +4,12 @@ from .api import group_exists, get_group, get_user_info
 import sys
 class PPMSPaymentSerializer(BasePaymentSerializer):
     ppms_email= serializers.CharField(required=False)
+    account = serializers.CharField(required=False)
     display = serializers.SerializerMethodField(read_only=True)
     group = serializers.DictField(read_only=True)
     user_info = serializers.DictField(read_only=True)
     def get_display(self, obj):
-        return {'PPMS Email/Login': obj.get('ppms_email','')}
+        return {'PPMS Email/Login': obj.get('ppms_email',''), 'Financial Account': obj.get('account', 'not specified')}
     # def validate(self, data):
     #     pi_email = data.get('pi_email', None)
     #     if not pi_email:

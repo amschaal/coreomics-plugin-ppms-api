@@ -3,8 +3,9 @@ from plugins import PaymentType, BasePaymentSerializer
 from .api import group_exists, get_group, get_user_info
 import sys
 class PPMSPaymentSerializer(BasePaymentSerializer):
+    ACCOUNT_ERROR = "If you have multiple financial accounts, please specify which one to bill.  If not applicable, please enter 'n/a'."
     ppms_email= serializers.CharField(required=False)
-    account = serializers.CharField(required=False)
+    account = serializers.CharField(required=True, error_messages={"required": ACCOUNT_ERROR, "blank": ACCOUNT_ERROR})
     display = serializers.SerializerMethodField(read_only=True)
     group = serializers.DictField(read_only=True)
     user_info = serializers.DictField(read_only=True)

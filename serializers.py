@@ -19,6 +19,9 @@ class PPMSPaymentSerializer(BasePaymentSerializer):
     #     if not self.group:
     #         raise serializers.ValidationError({"pi_email":"Group account with PI login '{0}' does not exist in PPMS.".format(pi_email)})
     #     return data
+    def to_representation(self, instance):
+        instance['account'] = instance.get('account', 'not specified')
+        return super().to_representation(instance)
     def to_internal_value(self, data):
         data = super().to_internal_value(data)
         ppms_email = data.get('ppms_email', data)

@@ -1,8 +1,10 @@
 from plugins import Plugin
+from .validator import validate_submission
 from .urls import urlpatterns
 from .forms import form
 from .serializers import PPMSPaymentType
 from . import filters
+
 class PPMSPlugin(Plugin):
     ID = 'ppms'
     SUBMISSION_URLS = urlpatterns
@@ -14,3 +16,4 @@ class PPMSPlugin(Plugin):
         'ppms_unpaid': { "type": "boolean", "title": "Has Unpaid PPMS Order", "enum": ['True'], "filters": [{"label": "=", "filter": "ppms_unpaid"}]},
     }
     FILTER_CLASSES = filters.PPMS_FILTER_CLASSES
+    SUBMISSION_VALIDATOR = validate_submission

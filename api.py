@@ -15,7 +15,6 @@ def post_data(settings, params, api2=False):
     url = '{}/{}/'.format(settings['ppms_url'], 'API2' if api2 else 'pumapi')
     params['apikey'] = settings['api2_token'] if api2 else settings['pumapi_token']
     data = parse.urlencode(params).encode()
-    # print(url, data)
     req =  request.Request(url, data=data) # this will make the method "POST"
     resp = request.urlopen(req)
     return resp
@@ -55,6 +54,13 @@ def search_orders(settings, comment='', unit_id=0, order_ids=[], date_gte=''):
         else:
             orders_dict[o['orderref']] = o
     return list(orders_dict.values())
+
+def get_groups(settings):
+    response = post_data(settings, {"action":"GetGroupsList","outformat":"json"},api2=True)
+    body = response.read()
+    if not body:
+        return []
+    return json.loads(body)
 
 def get_orders(settings):
     response = post_data(settings, {"action":"getorders"})

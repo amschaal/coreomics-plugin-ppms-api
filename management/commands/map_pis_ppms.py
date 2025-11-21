@@ -2,6 +2,7 @@ from django.core.management.base import BaseCommand
 from datetime import datetime, timedelta
 from dnaorder.models import PIInstitution, Submission, Lab, PI
 from plugins.ppms import api
+from plugins.ppms.utils import import_ppms_group
 
 class Command(BaseCommand):
     help = 'Map submissions to pis based on submission.pi_email. Can accept the number of days to go back.'
@@ -61,12 +62,13 @@ class Command(BaseCommand):
                 else:
                     ppms_pi = pi_map.get(email)
                     if ppms_pi:
-                        institution = PIInstitution.objects.filter(name__iexact=ppms_pi['institution']).first()
-                        if not institution:
-                            institution = PIInstitution.objects.create(name=ppms_pi['institution'][:75])
-                        pi = PI.objects.create(email=email, first_name=s.pi_first_name, last_name=s.pi_last_name, phone=s.pi_phone, department=ppms_pi['department'][:75], institution=institution, meta={'ppms':ppms_pi})
-                        existing_pis[email] = pi
-                        s.pi = pi
+                        ppms_group = import_ppms_group(email, ppms_pi)
+                        # institution = PIInstitution.objects.filter(name__iexact=ppms_pi['institution']).first()
+                        # if not institution:
+                        #     institution = PIInstitution.objects.create(name=ppms_pi['institution'][:75])
+                        # pi = PI.objects.create(email=email, first_name=s.pi_first_name, last_name=s.pi_last_name, phone=s.pi_phone, department=ppms_pi['department'][:75], institution=institution, meta={'ppms':ppms_pi})
+                        existing_pis[email] = ppms_group.pi
+                        s.pi = ppms_group.pi
                         s.save()
                     else:
                         unmapped.append(email)

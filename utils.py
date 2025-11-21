@@ -1,4 +1,5 @@
 from dnaorder.models import PI, PIInstitution
+from .models import PPMSGroup
 from .api import get_group, get_user_info
 
 def map_submission_pi(submission, save=True):
@@ -52,3 +53,15 @@ def get_or_create_pi(settings, email):
         last_name, first_name = data['unitname'].split(',')
     pi = PI.objects.create(email=email, first_name=first_name.strip(), last_name=last_name.strip(), department=data['department'][:75], institution=institution, meta={'ppms':data})
     return pi
+
+def import_ppms_group(email, groups_list_dict):
+    institution = PIInstitution.objects.filter(name__iexact=groups_list_dict['institution']).first()
+    if not institution:
+        institution = PIInstitution.objects.create(name=groups_list_dict['institution'][:75])
+    if ', ' in groups_list_dict['name']:
+        last_name, first_name = groups_list_dict['name'].split(', ')
+    else:
+        last_name = groups_list_dict['name']
+        first_name = ''
+    pi = PI.objects.create(email=email, first_name=first_name, last_name=last_name, department=groups_list_dict['department'][:75], institution=institution, meta={'ppms':groups_list_dict})
+    return PPMSGroup.objects.create(ppms_id=groups_list_dict['id'], email=email, first_name=first_name, last_name=last_name, name=groups_list_dict['name'], department=groups_list_dict['department'][:75], institution=groups_list_dict['institution'][:75], meta=groups_list_dict, pi=pi)

@@ -24,7 +24,7 @@ def get_pi_data(settings, email):
     except Exception as e:
         print('user info exception', e)
     try:
-        groups = get_group(settings, email)
+        groups = get_group(settings, email) #It might actually be necessary to get the group using the data from get_user_info
         group = groups.pop()
         print(group)
         for k, v in group.items():
@@ -40,7 +40,7 @@ def get_or_create_pi(settings, email):
     if pi:
         return pi
     data = get_pi_data(settings, email)
-    if 'institution' not in data:
+    if not data or 'institution' not in data:
         return None
 
     institution = PIInstitution.objects.filter(name__iexact=data['institution']).first()

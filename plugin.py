@@ -16,4 +16,4 @@ class PPMSPlugin(Plugin):
         'ppms_unpaid': { "type": "boolean", "title": "Has Unpaid PPMS Order", "enum": ['True'], "filters": [{"label": "=", "filter": "ppms_unpaid"}]},
     }
     FILTER_CLASSES = filters.PPMS_FILTER_CLASSES
-    SUBMISSION_VALIDATOR = validate_submission
+    # SUBMISSION_VALIDATOR = validate_submission

@@ -1,5 +1,5 @@
 from django.db import models
-from dnaorder.models import PI, Institution
+from dnaorder.models import PI, Institution, PIInstitution
 
 class PPMSGroup(models.Model):
     ppms_id = models.BigIntegerField(null=True, unique=True)
@@ -7,7 +7,6 @@ class PPMSGroup(models.Model):
     email = models.EmailField(max_length=75, unique=True, primary_key=False)
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=75)
-    name = models.CharField(max_length=75)
     name = models.CharField(max_length=75)
     department = models.CharField(max_length=100, null=True)
     institution = models.CharField(max_length=100, null=True)
@@ -33,6 +32,14 @@ class PPMSGroup(models.Model):
         groups = api.get_groups(settings)
         PPMSGroup.groups[institution.id] = groups
         return groups
+    def create_pi(self):
+        if self.pi:
+            return self.pi
+        institution = PIInstitution.objects.filter(name__iexact=self.institution[:75]).first()
+        if not institution:
+            institution = PIInstitution.objects.create(name=self.institution[:75])
+        pi = PI.objects.create(email=self.email, first_name=self.first_name.strip(), last_name=self.last_name.strip(), department=self.department[:75], institution=institution, meta={'ppms':self.meta})
+        return pi
     @staticmethod
     def create_group(group: dict, save=False):
         name_parts = group['name'].split(',')

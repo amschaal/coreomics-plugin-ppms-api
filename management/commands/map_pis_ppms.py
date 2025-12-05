@@ -27,28 +27,45 @@ class Command(BaseCommand):
         existing_pis = {}
         for pi in PI.objects.all():
             existing_pis[pi.email.lower()] = pi
+        existing_groups = {}
+        for group in PPMSGroup.objects.all():
+            existing_groups[group.email.lower()] = group
 
         # For bulk updating    
         submissions = []
         unmapped = []
 
-        for i in Institution.objects.all():
-            pi_map = PPMSGroup.get_group_map(i)
+        # for i in Institution.objects.all():
+            # pi_map = PPMSGroup.get_group_map(i)
 
-            for s in Submission.objects.filter(pi_email__contains='@', lab__institution=i, pi__isnull=True):
-                email = s.pi_email.strip().lower()
-                pi = existing_pis.get(email)
-                if pi:
-                    s.pi = pi
-                    submissions.append(s)
-                else:
-                    ppms_pi = pi_map.get(email)
-                    if ppms_pi:
-                        ppms_group = import_ppms_group(email, ppms_pi)
-                        existing_pis[email] = ppms_group.pi
-                        s.pi = ppms_group.pi
-                        s.save()
-                    else:
-                        unmapped.append(email)
+        for s in Submission.objects.filter(pi_email__contains='@', pi__isnull=True):
+            email = s.pi_email.strip().lower()
+            pi = existing_pis.get(email)
+            if not pi and email in existing_groups:
+                pi = existing_groups[email].create_pi()
+            # If no PI match try checking pi email pulled from the PPMS payment plugin if it exists. 
+            if not pi:
+                try:
+                    email = s.payment['user_info']['GroupPIUnitLogin'].strip().lower()
+                    pi = existing_pis.get(email)
+                    if not pi and email in existing_groups:
+                        pi = existing_groups[email].create_pi()
+                except Exception as e:
+                    # print ('Exception', e)
+                    pass
+            if pi:
+                s.pi = pi
+                submissions.append(s)
+
+                # else: #This is currently being done in the import_ppms_groups, which should be run right before this.  No need to import them on an individual basis
+                    # ppms_pi = pi_map.get(email)
+                    # if ppms_pi:
+                    #     ppms_group = import_ppms_group(email, ppms_pi)
+                    #     existing_pis[email] = ppms_group.pi
+                    #     s.pi = ppms_group.pi
+                    #     s.save()
+            else:
+                unmapped.append(email)
         Submission.objects.bulk_update(submissions, ['pi'], batch_size=100)
         self.stdout.write(self.style.SUCCESS(f'Updated {len(submissions)} submission PIs.  Unable to update {len(unmapped)}'))
+        self.stdout.write(', '.join(unmapped))

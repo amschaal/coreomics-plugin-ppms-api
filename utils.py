@@ -6,7 +6,7 @@ def map_submission_pi(submission, save=True):
     print('map_submission_pi')
     from .plugin import PPMSPlugin
     settings = submission.lab.get_plugin_settings_by_id(PPMSPlugin.ID, private=True, institution=True)
-    pi = get_or_create_pi(settings, submission.pi_email)
+    pi = get_or_create_pi(settings, submission)
     submission.pi = pi
     if save:
         submission.save()
@@ -34,8 +34,11 @@ def get_pi_data(settings, email):
         print('get_group excetpion', e)
     return data if data else None
 
-def get_or_create_pi(settings, email):
-    email = email.strip().lower()
+def get_or_create_pi(settings, submission):
+    try:
+        email = submission.payment['user_info']['GroupPIUnitLogin'].strip().lower()
+    except:
+        email = (submission.pi_email or '').strip().lower()
     pi = PI.objects.filter(email__iexact = email).first()
     if pi:
         return pi

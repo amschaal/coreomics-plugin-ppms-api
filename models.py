@@ -33,13 +33,13 @@ class PPMSGroup(models.Model):
         PPMSGroup.groups[institution.id] = groups
         return groups
     def create_pi(self):
-        if self.pi:
-            return self.pi
-        institution = PIInstitution.objects.filter(name__iexact=self.institution[:75]).first()
-        if not institution:
-            institution = PIInstitution.objects.create(name=self.institution[:75])
-        pi = PI.objects.create(email=self.email, first_name=self.first_name.strip(), last_name=self.last_name.strip(), department=self.department[:75], institution=institution, meta={'ppms':self.meta})
-        return pi
+        if not self.pi:
+            institution = PIInstitution.objects.filter(name__iexact=self.institution[:75]).first()
+            if not institution:
+                institution = PIInstitution.objects.create(name=self.institution[:75])
+            self.pi = PI.objects.create(email=self.email, first_name=self.first_name.strip(), last_name=self.last_name.strip(), department=self.department[:75], institution=institution, meta={'ppms':self.meta})
+            self.save()
+        return self.pi
     @staticmethod
     def create_group(group: dict, save=False):
         name_parts = group['name'].split(',')

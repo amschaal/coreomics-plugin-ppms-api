@@ -13,8 +13,8 @@ class Command(BaseCommand):
         parser.add_argument(
             '--days',
             type=int,
-            default=7,
-            help='Number of days to subtract from now (default: 7)'
+            default=90,
+            help='Number of days to subtract from now (default: 90)'
         )
 
     def handle(self, *args, **options):
@@ -38,7 +38,7 @@ class Command(BaseCommand):
         # for i in Institution.objects.all():
             # pi_map = PPMSGroup.get_group_map(i)
 
-        for s in Submission.objects.filter(pi_email__contains='@', pi__isnull=True):
+        for s in Submission.objects.filter(pi__isnull=True, submitted__gte=since):
             email = s.pi_email.strip().lower()
             pi = existing_pis.get(email)
             if not pi and email in existing_groups:
@@ -51,8 +51,12 @@ class Command(BaseCommand):
                     if not pi and email in existing_groups:
                         pi = existing_groups[email].create_pi()
                 except Exception as e:
-                    # print ('Exception', e)
                     pass
+            if not pi: # Still no pi, try using submission.email
+                email = s.email.strip().lower()
+                pi = existing_pis.get(email)
+                if not pi and email in existing_groups:
+                    pi = existing_groups[email].create_pi()
             if pi:
                 s.pi = pi
                 submissions.append(s)
